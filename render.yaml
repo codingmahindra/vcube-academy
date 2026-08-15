@@ -48,8 +48,9 @@ services:
         value: ""
 
   # ── Frontend: React SPA ───────────────────────────────────────────────────
-  - type: static
+  - type: web
     name: vcube-frontend
+    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
