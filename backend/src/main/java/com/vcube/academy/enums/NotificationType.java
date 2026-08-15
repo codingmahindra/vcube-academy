@@ -1,0 +1,11 @@
+package com.vcube.academy.enums;
+
+public enum NotificationType {
+    JOB_MATCH,
+    APPLICATION_UPDATE,
+    DAILY_PLAN_REMINDER,
+    WEAK_TOPIC_WARNING,
+    INTERVIEW_RECOMMENDATION,
+    RESUME_IMPROVEMENT,
+    PLACEMENT_PAPER_ALERT
+}

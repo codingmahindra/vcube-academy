@@ -1,0 +1,23 @@
+# ─── Secrets & Local Environment ─────────────────────────────────────────────
+.env
+*.env.local
+*.env.production
+
+# ─── Maven Build Output ───────────────────────────────────────────────────────
+backend/target/
+
+# ─── Node / Frontend ──────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ─── IDE & OS ─────────────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/

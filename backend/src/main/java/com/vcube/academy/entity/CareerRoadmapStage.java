@@ -1,0 +1,13 @@
+package com.vcube.academy.entity;
+
+public enum CareerRoadmapStage {
+    FOUNDATION,
+    CORE_JAVA,
+    BACKEND_SPRING,
+    DATABASE_SQL,
+    DSA_PROBLEM_SOLVING,
+    INTERVIEW_PREPARATION,
+    MOCK_INTERVIEW_MASTERY,
+    ATS_RESUME_PERFECTION,
+    ACTIVE_JOB_APPLICATIONS
+}
