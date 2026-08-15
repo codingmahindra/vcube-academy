@@ -48,13 +48,11 @@ services:
         value: ""
 
   # ── Frontend: React SPA ───────────────────────────────────────────────────
-  - type: web
+  - type: static
     name: vcube-frontend
-    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
-    plan: free
     envVars:
       # Must point to the Render backend service URL
       - key: VITE_API_BASE_URL
