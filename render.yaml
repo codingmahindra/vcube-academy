@@ -1,10 +1,4 @@
 # render.yaml — VCUBE Academy Render Blueprint
-# Docs: https://render.com/docs/blueprint-spec
-#
-# Creates 3 services automatically:
-#   1. vcube-db       — Managed PostgreSQL database
-#   2. vcube-backend  — Spring Boot API (Docker)
-#   3. vcube-frontend — React SPA (Static Site)
 
 databases:
   - name: vcube-db
@@ -13,53 +7,83 @@ databases:
     user: vcube_user
 
 services:
-  # ── Backend: Spring Boot API ──────────────────────────────────────────────
+
+  # =========================================================
+  # BACKEND - Spring Boot
+  # =========================================================
   - type: web
     name: vcube-backend
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     plan: free
+
     healthCheckPath: /api/actuator/health
+
     envVars:
-      # Database — auto-wired from managed Render PostgreSQL
-      - key: DATABASE_URL
+
+      # PostgreSQL host
+      - key: DATABASE_HOST
         fromDatabase:
           name: vcube-db
-          property: connectionString
+          property: host
+
+      # PostgreSQL port
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: vcube-db
+          property: port
+
+      # PostgreSQL database name
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: vcube-db
+          property: database
+
+      # PostgreSQL username
       - key: DATABASE_USERNAME
         fromDatabase:
           name: vcube-db
           property: user
+
+      # PostgreSQL password
       - key: DATABASE_PASSWORD
         fromDatabase:
           name: vcube-db
           property: password
-      # Security — Render auto-generates a cryptographically secure value
+
+      # JWT secret
       - key: JWT_SECRET
         generateValue: true
-      # CORS — must match the exact frontend URL Render assigns
+
+      # CORS
       - key: CORS_ALLOWED_ORIGINS
         value: https://vcube-frontend.onrender.com
-      # AI — built-in engine (no external API key required)
+
+      # AI configuration
       - key: AI_PROVIDER
         value: BUILTIN
+
       - key: AI_API_KEY
         value: ""
 
-  # ── Frontend: React SPA ───────────────────────────────────────────────────
+  # =========================================================
+  # FRONTEND - React
+  # =========================================================
   - type: web
     name: vcube-frontend
     runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
+
     envVars:
-      # Must point to the Render backend service URL
+
       - key: VITE_API_BASE_URL
         value: https://vcube-backend.onrender.com/api
+
     routes:
-      # SPA fallback — all routes serve index.html
+
       - type: rewrite
         source: /*
         destination: /index.html

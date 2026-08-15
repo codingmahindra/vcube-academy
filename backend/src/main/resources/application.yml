@@ -8,7 +8,7 @@ spring:
     name: vcube-academy
 
   datasource:
-    url: jdbc:${DATABASE_URL}
+    url: jdbc:postgresql://${DATABASE_HOST}:5432/${DATABASE_NAME}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
