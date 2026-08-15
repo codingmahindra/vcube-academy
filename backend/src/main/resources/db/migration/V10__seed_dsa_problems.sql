@@ -1,187 +1,795 @@
 -- =========================================================================
--- V10: Seed DSA Categories and Placement Problems
+-- V10: Seed DSA Problems
 -- =========================================================================
 
--- 1. Insert 20 DSA Categories
-INSERT INTO dsa_categories (id, name, slug, description, icon, display_order, is_active) VALUES
-(1,  'Arrays',                 'arrays',                 'Array manipulation, two pointers, prefix sums, and sliding window techniques.', 'Array', 1, true),
-(2,  'Strings',                'strings',                'String processing, pattern matching, parsing, and anagrams.', 'Type', 2, true),
-(3,  'Linked Lists',           'linked-lists',           'Singly linked lists, doubly linked lists, cycle detection, and reversal.', 'GitCommit', 3, true),
-(4,  'Stacks',                 'stacks',                 'LIFO operations, monotonic stacks, parenthesis matching, and expression evaluation.', 'Layers', 4, true),
-(5,  'Queues',                 'queues',                 'FIFO structures, deques, priority queues, and task scheduling.', 'ListOrdered', 5, true),
-(6,  'Hashing',                'hashing',                'Hash maps, hash sets, frequency counting, and collision resolution.', 'Hash', 6, true),
-(7,  'Searching',              'searching',              'Binary search, search in rotated sorted arrays, and ternary search.', 'Search', 7, true),
-(8,  'Sorting',                'sorting',                'Merge sort, quicksort, counting sort, and custom comparators.', 'ArrowUpDown', 8, true),
-(9,  'Recursion',              'recursion',              'Backtracking, divide and conquer, recursive call stack analysis.', 'Repeat', 9, true),
-(10, 'Trees',                  'trees',                  'Binary trees, traversals (Inorder/Preorder/Postorder/Levelorder), and tree properties.', 'TreeStructure', 10, true),
-(11, 'Binary Search Trees',    'binary-search-trees',    'BST insertion, deletion, validation, and LCA search.', 'GitFork', 11, true),
-(12, 'Heaps & Priority Queue', 'heaps',                  'Min/max heaps, top-K frequent elements, and heap sort.', 'Pyramid', 12, true),
-(13, 'Graphs',                 'graphs',                 'BFS, DFS, Dijkstra, topological sort, and cycle detection.', 'Network', 13, true),
-(14, 'Greedy Algorithms',      'greedy',                 'Interval scheduling, activity selection, and optimal choices.', 'Zap', 14, true),
-(15, 'Dynamic Programming',    'dynamic-programming',    'Memoization, tabulation, knapsack problems, and subproblem optimization.', 'Cpu', 15, true),
-(16, 'Backtracking',           'backtracking',           'N-Queens, Sudoku solver, subsets, and permutations.', 'Undo2', 16, true),
-(17, 'Bit Manipulation',       'bit-manipulation',       'Bitwise AND/OR/XOR, shifts, counting set bits, and single numbers.', 'Binary', 17, true),
-(18, 'Two Pointers',           'two-pointers',           'Left/right pointer strategies, meeting in the middle, and partitioning.', 'Columns2', 18, true),
-(19, 'Sliding Window',         'sliding-window',         'Fixed size and dynamic size window optimization problems.', 'Maximize2', 19, true),
-(20, 'Math & Fast I/O',        'math',                   'GCD, Sieve of Eratosthenes, modular arithmetic, and prime numbers.', 'Calculator', 20, true);
+-- =========================================================================
+-- 1. DSA Categories
+-- =========================================================================
 
-SELECT setval('dsa_categories_id_seq', (SELECT MAX(id) FROM dsa_categories));
+INSERT INTO dsa_categories
+    (name, slug, description, icon, display_order, is_active)
+VALUES
+    ('Arrays', 'arrays', 'Practice problems based on arrays and array manipulation.', 'array', 1, TRUE),
+    ('Strings', 'strings', 'Practice problems based on strings and string manipulation.', 'string', 2, TRUE),
+    ('Linked List', 'linked-list', 'Practice problems based on singly and doubly linked lists.', 'link', 3, TRUE),
+    ('Stack', 'stack', 'Practice problems based on stack data structures.', 'stack', 4, TRUE),
+    ('Queue', 'queue', 'Practice problems based on queue data structures.', 'queue', 5, TRUE),
+    ('HashMap', 'hashmap', 'Practice problems using HashMap and hashing techniques.', 'hashmap', 6, TRUE),
+    ('Sorting', 'sorting', 'Practice problems based on sorting algorithms.', 'sort', 7, TRUE),
+    ('Searching', 'searching', 'Practice problems based on searching algorithms.', 'search', 8, TRUE),
+    ('Recursion', 'recursion', 'Practice problems based on recursion.', 'recursion', 9, TRUE),
+    ('Trees', 'trees', 'Practice problems based on tree data structures.', 'tree', 10, TRUE),
+    ('Graphs', 'graphs', 'Practice problems based on graph algorithms.', 'graph', 11, TRUE),
+    ('Dynamic Programming', 'dynamic-programming', 'Practice problems based on dynamic programming.', 'dp', 12, TRUE)
+ON CONFLICT (slug) DO NOTHING;
 
--- 2. Insert 15 Placement-Grade DSA Problems
 
--- Problem 1: Two Sum
-INSERT INTO dsa_problems (
-    id, category_id, title, slug, description, difficulty, subtopic, constraints, input_format, output_format,
-    expected_approach, time_complexity, space_complexity, hints, interview_points, company_tags, java_starter_code,
-    solution_explanation, solution_java_code, is_published
-) VALUES (
-    1, 1, 'Two Sum', 'two-sum',
-    'Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.',
-    'EASY', 'Hash Table / Array',
-    '2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\n-10^9 <= target <= 10^9\nExactly one valid answer exists.',
-    'First line: space-separated integers for nums array.\nSecond line: target integer.',
-    'Space-separated pair of indices [index1, index2] in ascending order.',
-    'Use a HashMap to store value-to-index mappings as you iterate through the array.',
-    'O(N)', 'O(N)',
-    '["Can you compute target - current_element?", "Store seen elements in a HashMap for O(1) lookup."]',
-    '["What is the brute force time complexity? O(N^2)", "Why is HashMap optimal? Reduces lookup time from O(N) to O(1)."]',
-    '["Google", "Amazon", "Microsoft", "Meta", "TCS", "Infosys"]',
-    'public class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your solution here\n        return new int[]{};\n    }\n}',
-    'We traverse the list once. For each element `nums[i]`, we check if `target - nums[i]` exists in the HashMap. If present, we return its index and `i`. Otherwise, we put `nums[i]` into the map.',
-    'import java.util.*;\n\npublic class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (map.containsKey(complement)) {\n                return new int[] { map.get(complement), i };\n            }\n            map.put(nums[i], i);\n        }\n        return new int[]{};\n    }\n}',
-    true
-);
+-- =========================================================================
+-- 2. ARRAY PROBLEMS
+-- =========================================================================
 
--- Problem 2: Reverse a String
-INSERT INTO dsa_problems (
-    id, category_id, title, slug, description, difficulty, subtopic, constraints, input_format, output_format,
-    expected_approach, time_complexity, space_complexity, hints, interview_points, company_tags, java_starter_code,
-    solution_explanation, solution_java_code, is_published
-) VALUES (
-    2, 2, 'Reverse a String', 'reverse-string',
-    'Write a function that reverses a given string `s` in-place using two pointers.',
-    'EASY', 'Two Pointers',
-    '1 <= s.length <= 10^5\nString consists of printable ASCII characters.',
-    'A single line containing the string `s`.',
-    'The reversed string.',
-    'Use two pointers starting at opposite ends of the character array and swap until they meet.',
-    'O(N)', 'O(1)',
-    '["Use left=0 and right=n-1 pointers.", "Swap s[left] and s[right] and move inward."]',
-    '["Why in-place reversal? Saves memory overhead.", "How to handle string immutability in Java? Convert to char[] or use StringBuilder."]',
-    '["Wipro", "Cognizant", "Accenture", "Amazon"]',
-    'public class Solution {\n    public String reverseString(String s) {\n        // Write your solution here\n        return "";\n    }\n}',
-    'Convert string to a char array. Maintain `left=0` and `right=len-1`. Swap characters at `left` and `right`, increment `left`, decrement `right`.',
-    'public class Solution {\n    public String reverseString(String s) {\n        char[] arr = s.toCharArray();\n        int left = 0, right = arr.length - 1;\n        while (left < right) {\n            char temp = arr[left];\n            arr[left] = arr[right];\n            arr[right] = temp;\n            left++;\n            right--;\n        }\n        return new String(arr);\n    }\n}',
-    true
-);
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Find Maximum Element',
+    'find-maximum-element',
+    'Given an integer array, find and return the maximum element in the array.',
+    'EASY',
+    'Array Traversal',
+    'The array contains at least one element.',
+    'An integer array.',
+    'Return the maximum element.',
+    'Traverse the array once while maintaining the maximum value.',
+    'O(n)',
+    'O(1)',
+    'Initialize max with the first element and compare every remaining element.',
+    'Understand array traversal and maintaining a running maximum.',
+    'TCS, Infosys, Wipro, Accenture',
+    'public class Solution {
+    public static int findMaximum(int[] arr) {
+        // Write your solution here
+        return 0;
+    }
+}',
+    'Start with the first element as the maximum. Traverse the remaining elements. If the current element is greater than max, update max. Finally return max.',
+    'public class Solution {
+    public static int findMaximum(int[] arr) {
+        int max = arr[0];
 
--- Problem 3: Valid Parentheses
-INSERT INTO dsa_problems (
-    id, category_id, title, slug, description, difficulty, subtopic, constraints, input_format, output_format,
-    expected_approach, time_complexity, space_complexity, hints, interview_points, company_tags, java_starter_code,
-    solution_explanation, solution_java_code, is_published
-) VALUES (
-    3, 4, 'Valid Parentheses', 'valid-parentheses',
-    'Given a string `s` containing just the characters `(`, `)`, `{`, `}`, `[` and `]`, determine if the input string is valid.\n\nAn input string is valid if:\n1. Open brackets must be closed by the same type of brackets.\n2. Open brackets must be closed in the correct order.\n3. Every close bracket has a corresponding open bracket.',
-    'EASY', 'Stack',
-    '1 <= s.length <= 10^4\ns consists of brackets only: (), {}, []',
-    'A single line string s.',
-    'true if string is valid, false otherwise.',
-    'Use a Stack to push expected closing brackets when an opening bracket is encountered.',
-    'O(N)', 'O(N)',
-    '["When seeing an opening bracket, push its matching closing bracket onto stack.", "When seeing closing bracket, pop stack and compare."]',
-    '["What happens if stack is empty when closing bracket appears? Invalid.", "Final stack must be empty for string to be valid."]',
-    '["Amazon", "Microsoft", "Oracle", "Goldman Sachs"]',
-    'public class Solution {\n    public boolean isValid(String s) {\n        // Write your solution here\n        return false;\n    }\n}',
-    'Traverse string. Push expected closing bracket onto Stack. When closing bracket is seen, pop stack; if mismatched or empty, return false. Return true if stack is empty at end.',
-    'import java.util.*;\n\npublic class Solution {\n    public boolean isValid(String s) {\n        Stack<Character> stack = new Stack<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(') stack.push(')');\n            else if (c == '{') stack.push('}');\n            else if (c == '[') stack.push(']');\n            else if (stack.isEmpty() || stack.pop() != c) return false;\n        }\n        return stack.isEmpty();\n    }\n}',
-    true
-);
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
+            }
+        }
 
--- Problem 4: Binary Search
-INSERT INTO dsa_problems (
-    id, category_id, title, slug, description, difficulty, subtopic, constraints, input_format, output_format,
-    expected_approach, time_complexity, space_complexity, hints, interview_points, company_tags, java_starter_code,
-    solution_explanation, solution_java_code, is_published
-) VALUES (
-    4, 7, 'Binary Search', 'binary-search',
-    'Given a sorted array of distinct integers `nums` and a target value `target`, return the 0-based index of `target` if it exists. Return -1 if target is not found.',
-    'EASY', 'Binary Search',
-    '1 <= nums.length <= 10^4\n-10^4 <= nums[i], target <= 10^4\nnums is sorted in ascending order.',
-    'First line: space-separated integers.\nSecond line: target integer.',
-    'Integer index of target or -1.',
-    'Use binary search: compare middle element, adjust low/high bounds.',
-    'O(log N)', 'O(1)',
-    '["Calculate mid = low + (high - low) / 2 to avoid integer overflow.", "If nums[mid] == target, return mid."]',
-    '["Why use low + (high - low) / 2 instead of (low + high) / 2? Prevents potential integer overflow.", "Binary search requires a sorted space."]',
-    '["Google", "Uber", "Capgemini", "LTI"]',
-    'public class Solution {\n    public int search(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}',
-    'Iterative binary search. Compare target with `nums[mid]`. If equal, return `mid`. If target < `nums[mid]`, search left (`high = mid - 1`), else search right (`low = mid + 1`).',
-    'public class Solution {\n    public int search(int[] nums, int target) {\n        int low = 0, high = nums.length - 1;\n        while (low <= high) {\n            int mid = low + (high - low) / 2;\n            if (nums[mid] == target) return mid;\n            if (nums[mid] < target) low = mid + 1;\n            else high = mid - 1;\n        }\n        return -1;\n    }\n}',
-    true
-);
+        return max;
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'arrays'
+ON CONFLICT (slug) DO NOTHING;
 
--- Problem 5: Maximum Subarray (Kadane''s Algorithm)
-INSERT INTO dsa_problems (
-    id, category_id, title, slug, description, difficulty, subtopic, constraints, input_format, output_format,
-    expected_approach, time_complexity, space_complexity, hints, interview_points, company_tags, java_starter_code,
-    solution_explanation, solution_java_code, is_published
-) VALUES (
-    5, 1, 'Maximum Subarray (Kadane''s Algorithm)', 'maximum-subarray',
-    'Given an integer array `nums`, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.',
-    'MEDIUM', 'Dynamic Programming / Array',
-    '1 <= nums.length <= 10^5\n-10^4 <= nums[i] <= 10^4',
-    'Space-separated integers representing nums.',
-    'Single integer representing max subarray sum.',
-    'Kadane''s algorithm: maintain current sum and max sum found so far.',
-    'O(N)', 'O(1)',
-    '["At each element, decide whether to add it to current sum or start a new subarray.", "currentSum = max(nums[i], currentSum + nums[i])"]',
-    '["Kadane''s algorithm is DP with O(1) space.", "How to handle all-negative arrays? Pre-initialize maxSum to first element."]',
-    '["Amazon", "Microsoft", "Adobe", "Samsung"]',
-    'public class Solution {\n    public int maxSubArray(int[] nums) {\n        // Write your solution here\n        return 0;\n    }\n}',
-    'Maintain `currentSum` and `maxSum`. For each num: `currentSum = Math.max(num, currentSum + num); maxSum = Math.max(maxSum, currentSum);`.',
-    'public class Solution {\n    public int maxSubArray(int[] nums) {\n        int currentSum = nums[0];\n        int maxSum = nums[0];\n        for (int i = 1; i < nums.length; i++) {\n            currentSum = Math.max(nums[i], currentSum + nums[i]);\n            maxSum = Math.max(maxSum, currentSum);\n        }\n        return maxSum;\n    }\n}',
-    true
-);
 
-SELECT setval('dsa_problems_id_seq', (SELECT MAX(id) FROM dsa_problems));
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Find Second Largest Element',
+    'find-second-largest-element',
+    'Given an integer array, find the second largest distinct element.',
+    'EASY',
+    'Array Traversal',
+    'The array contains at least two distinct elements.',
+    'An integer array.',
+    'Return the second largest distinct element.',
+    'Maintain the largest and second largest values while traversing the array.',
+    'O(n)',
+    'O(1)',
+    'Keep two variables: largest and secondLargest.',
+    'Tests understanding of one-pass array traversal.',
+    'TCS, Infosys, Accenture, Cognizant',
+    'public class Solution {
+    public static int findSecondLargest(int[] arr) {
+        // Write your solution here
+        return 0;
+    }
+}',
+    'Maintain the largest and second largest values. Update them whenever a larger value is found.',
+    'public class Solution {
+    public static int findSecondLargest(int[] arr) {
+        int largest = Integer.MIN_VALUE;
+        int secondLargest = Integer.MIN_VALUE;
 
--- 3. Insert Test Cases for Problems
+        for (int value : arr) {
+            if (value > largest) {
+                secondLargest = largest;
+                largest = value;
+            } else if (value > secondLargest && value != largest) {
+                secondLargest = value;
+            }
+        }
 
--- Test Cases for Problem 1 (Two Sum)
-INSERT INTO dsa_test_cases (problem_id, input, expected_output, is_sample, is_hidden, explanation, display_order) VALUES
-(1, '2 7 11 15\n9', '0 1', true, false, 'nums[0] + nums[1] = 2 + 7 = 9', 1),
-(1, '3 2 4\n6', '1 2', true, false, 'nums[1] + nums[2] = 2 + 4 = 6', 2),
-(1, '3 3\n6', '0 1', false, true, 'Duplicate numbers test', 3),
-(1, '-1 -2 -3 -4 -5\n-8', '2 4', false, true, 'Negative numbers test', 4);
+        return secondLargest;
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'arrays'
+ON CONFLICT (slug) DO NOTHING;
 
--- Test Cases for Problem 2 (Reverse String)
-INSERT INTO dsa_test_cases (problem_id, input, expected_output, is_sample, is_hidden, explanation, display_order) VALUES
-(2, 'hello', 'olleh', true, false, 'Standard lowercase string', 1),
-(2, 'VCUBE', 'EBUCV', true, false, 'Uppercase string', 2),
-(2, 'a', 'a', false, true, 'Single character edge case', 3),
-(2, 'Java Full Stack', 'kcatS lluF avaJ', false, true, 'Multi-word string', 4);
 
--- Test Cases for Problem 3 (Valid Parentheses)
-INSERT INTO dsa_test_cases (problem_id, input, expected_output, is_sample, is_hidden, explanation, display_order) VALUES
-(3, '()', 'true', true, false, 'Simple matching pair', 1),
-(3, '()[]{}', 'true', true, false, 'Multiple valid matching pairs', 2),
-(3, '(]', 'false', true, false, 'Mismatched closing bracket', 3),
-(3, '([)]', 'false', false, true, 'Incorrect closing order', 4),
-(3, '{[]}', 'true', false, true, 'Nested valid brackets', 5);
+-- =========================================================================
+-- 3. STRING PROBLEMS
+-- =========================================================================
 
--- Test Cases for Problem 4 (Binary Search)
-INSERT INTO dsa_test_cases (problem_id, input, expected_output, is_sample, is_hidden, explanation, display_order) VALUES
-(4, '-1 0 3 5 9 12\n9', '4', true, false, 'Target 9 is at index 4', 1),
-(4, '-1 0 3 5 9 12\n2', '-1', true, false, 'Target 2 does not exist in array', 2),
-(4, '5\n5', '0', false, true, 'Single element array matching target', 3),
-(4, '10 20 30 40 50\n60', '-1', false, true, 'Target greater than all elements', 4);
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Reverse a String',
+    'reverse-a-string',
+    'Given a string, reverse the string and return the reversed result.',
+    'EASY',
+    'String Manipulation',
+    'The string may contain letters, digits, and spaces.',
+    'A string.',
+    'Return the reversed string.',
+    'Use StringBuilder to reverse the characters.',
+    'O(n)',
+    'O(n)',
+    'StringBuilder provides a reverse method.',
+    'Basic string manipulation is frequently asked in interviews.',
+    'TCS, Infosys, Wipro, Accenture',
+    'public class Solution {
+    public static String reverse(String str) {
+        // Write your solution here
+        return "";
+    }
+}',
+    'Create a StringBuilder using the input string and call reverse().',
+    'public class Solution {
+    public static String reverse(String str) {
+        return new StringBuilder(str).reverse().toString();
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'strings'
+ON CONFLICT (slug) DO NOTHING;
 
--- Test Cases for Problem 5 (Maximum Subarray)
-INSERT INTO dsa_test_cases (problem_id, input, expected_output, is_sample, is_hidden, explanation, display_order) VALUES
-(5, '-2 1 -3 4 -1 2 1 -5 4', '6', true, false, 'Subarray [4,-1,2,1] has largest sum = 6', 1),
-(5, '1', '1', true, false, 'Single positive element', 2),
-(5, '5 4 -1 7 8', '23', false, true, 'All elements except one negative', 3),
-(5, '-5 -2 -3 -1 -4', '-1', false, true, 'All negative elements', 4);
 
-SELECT setval('dsa_test_cases_id_seq', (SELECT MAX(id) FROM dsa_test_cases));
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Check Palindrome',
+    'check-palindrome',
+    'Given a string, determine whether it reads the same forward and backward.',
+    'EASY',
+    'Two Pointer',
+    'The string contains printable characters.',
+    'A string.',
+    'Return true if the string is a palindrome; otherwise return false.',
+    'Compare characters from both ends moving toward the center.',
+    'O(n)',
+    'O(1)',
+    'Use two indexes: left and right.',
+    'Tests two-pointer technique and string manipulation.',
+    'TCS, Infosys, Amazon, Accenture',
+    'public class Solution {
+    public static boolean isPalindrome(String str) {
+        // Write your solution here
+        return false;
+    }
+}',
+    'Use two pointers. Compare the characters at left and right. If they differ, the string is not a palindrome.',
+    'public class Solution {
+    public static boolean isPalindrome(String str) {
+        int left = 0;
+        int right = str.length() - 1;
+
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+
+            left++;
+            right--;
+        }
+
+        return true;
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'strings'
+ON CONFLICT (slug) DO NOTHING;
+
+
+-- =========================================================================
+-- 4. HASHMAP PROBLEMS
+-- =========================================================================
+
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Two Sum',
+    'two-sum',
+    'Given an integer array and a target value, find two indices whose values add up to the target.',
+    'EASY',
+    'HashMap',
+    'There is exactly one valid answer.',
+    'An integer array and a target integer.',
+    'Return the two indices whose values add up to the target.',
+    'Store previously visited values in a HashMap and search for target minus current value.',
+    'O(n)',
+    'O(n)',
+    'For every value, calculate target - value.',
+    'HashMap based lookup is a common interview technique.',
+    'Amazon, Google, Microsoft, TCS',
+    'import java.util.*;
+
+public class Solution {
+    public static int[] twoSum(int[] nums, int target) {
+        // Write your solution here
+        return new int[0];
+    }
+}',
+    'Store each number and its index in a HashMap. For every current number, calculate the required complement. If the complement exists, return both indices.',
+    'import java.util.*;
+
+public class Solution {
+    public static int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+
+            if (map.containsKey(complement)) {
+                return new int[]{map.get(complement), i};
+            }
+
+            map.put(nums[i], i);
+        }
+
+        return new int[0];
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'hashmap'
+ON CONFLICT (slug) DO NOTHING;
+
+
+-- =========================================================================
+-- 5. SORTING PROBLEMS
+-- =========================================================================
+
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Bubble Sort',
+    'bubble-sort',
+    'Sort an integer array using the Bubble Sort algorithm.',
+    'EASY',
+    'Sorting',
+    'The array may contain positive and negative integers.',
+    'An integer array.',
+    'Return the sorted array.',
+    'Repeatedly compare adjacent elements and swap them when they are in the wrong order.',
+    'O(n^2)',
+    'O(1)',
+    'After every pass, the largest remaining element moves to the end.',
+    'Understand basic sorting and nested loops.',
+    'TCS, Infosys, Wipro',
+    'public class Solution {
+    public static int[] bubbleSort(int[] arr) {
+        // Write your solution here
+        return arr;
+    }
+}',
+    'Compare adjacent elements. Swap them when the left element is greater than the right element. Repeat until the array is sorted.',
+    'public class Solution {
+    public static int[] bubbleSort(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = 0; j < arr.length - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+
+        return arr;
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'sorting'
+ON CONFLICT (slug) DO NOTHING;
+
+
+-- =========================================================================
+-- 6. SEARCHING PROBLEMS
+-- =========================================================================
+
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Binary Search',
+    'binary-search',
+    'Given a sorted integer array, find the index of a target value.',
+    'EASY',
+    'Binary Search',
+    'The array is sorted in ascending order.',
+    'A sorted integer array and a target integer.',
+    'Return the index of the target, or -1 if it is not present.',
+    'Use left, right, and middle pointers to repeatedly reduce the search range.',
+    'O(log n)',
+    'O(1)',
+    'Calculate middle and compare arr[middle] with target.',
+    'Binary search is a fundamental interview algorithm.',
+    'Amazon, Microsoft, TCS, Infosys',
+    'public class Solution {
+    public static int binarySearch(int[] arr, int target) {
+        // Write your solution here
+        return -1;
+    }
+}',
+    'If the middle value equals the target, return its index. If the target is greater, search the right half. Otherwise search the left half.',
+    'public class Solution {
+    public static int binarySearch(int[] arr, int target) {
+        int left = 0;
+        int right = arr.length - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+
+            if (arr[mid] == target) {
+                return mid;
+            }
+
+            if (arr[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'searching'
+ON CONFLICT (slug) DO NOTHING;
+
+
+-- =========================================================================
+-- 7. RECURSION PROBLEMS
+-- =========================================================================
+
+INSERT INTO dsa_problems
+(
+    category_id,
+    title,
+    slug,
+    description,
+    difficulty,
+    subtopic,
+    constraints,
+    input_format,
+    output_format,
+    expected_approach,
+    time_complexity,
+    space_complexity,
+    hints,
+    interview_points,
+    company_tags,
+    java_starter_code,
+    solution_explanation,
+    solution_java_code,
+    is_published
+)
+SELECT
+    c.id,
+    'Factorial Using Recursion',
+    'factorial-using-recursion',
+    'Calculate the factorial of a non-negative integer using recursion.',
+    'EASY',
+    'Recursion',
+    'The input is a non-negative integer.',
+    'An integer n.',
+    'Return n factorial.',
+    'Use the recurrence n! = n * (n - 1)! with 0! = 1.',
+    'O(n)',
+    'O(n)',
+    'The base case is n <= 1.',
+    'Tests understanding of recursion and base cases.',
+    'TCS, Infosys, Wipro',
+    'public class Solution {
+    public static long factorial(int n) {
+        // Write your solution here
+        return 0;
+    }
+}',
+    'If n is 0 or 1, return 1. Otherwise return n multiplied by factorial(n - 1).',
+    'public class Solution {
+    public static long factorial(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+
+        return n * factorial(n - 1);
+    }
+}',
+    TRUE
+FROM dsa_categories c
+WHERE c.slug = 'recursion'
+ON CONFLICT (slug) DO NOTHING;
+
+
+-- =========================================================================
+-- 8. SAMPLE TEST CASES
+-- =========================================================================
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    '5, 2, 9, 1, 7',
+    '9',
+    TRUE,
+    FALSE,
+    '9 is the largest element in the array.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'find-maximum-element'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
+
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    '10, 5, 8, 20, 3',
+    '8',
+    TRUE,
+    FALSE,
+    '20 is the largest and 10 is the second largest distinct element.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'find-second-largest-element'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
+
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    'hello',
+    'olleh',
+    TRUE,
+    FALSE,
+    'The characters are reversed.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'reverse-a-string'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
+
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    'madam',
+    'true',
+    TRUE,
+    FALSE,
+    'The string reads the same from both directions.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'check-palindrome'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
+
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    '2,7,11,15; target=9',
+    '[0,1]',
+    TRUE,
+    FALSE,
+    'The values 2 and 7 add up to 9.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'two-sum'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
+
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    '5,1,4,2,8',
+    '[1,2,4,5,8]',
+    TRUE,
+    FALSE,
+    'The array is sorted in ascending order.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'bubble-sort'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
+
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    '1,3,5,7,9; target=7',
+    '3',
+    TRUE,
+    FALSE,
+    '7 is present at index 3.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'binary-search'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
+
+
+INSERT INTO dsa_test_cases
+(
+    problem_id,
+    input,
+    expected_output,
+    is_sample,
+    is_hidden,
+    explanation,
+    display_order
+)
+SELECT
+    p.id,
+    '5',
+    '120',
+    TRUE,
+    FALSE,
+    '5! = 5 × 4 × 3 × 2 × 1 = 120.',
+    1
+FROM dsa_problems p
+WHERE p.slug = 'factorial-using-recursion'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM dsa_test_cases t
+      WHERE t.problem_id = p.id
+  );
