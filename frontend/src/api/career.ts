@@ -53,16 +53,19 @@ export interface CopilotChatResponse {
   createdAt: string;
 }
 
+/*
+ * DAILY PLAN
+ * This matches the backend DailyPlanItemDto
+ */
 export interface DailyPlanItem {
   id: number;
-  title: string;
   category: string;
-  description: string;
+  title: string;
   targetCount: number;
   completedCount: number;
+  actionLink: string;
   isCompleted: boolean;
-  actionRoute: string;
-  actionLabel: string;
+  displayOrder: number;
 }
 
 export interface DailyPlan {
@@ -71,6 +74,7 @@ export interface DailyPlan {
   totalTasks: number;
   completedTasks: number;
   completionPercentage: number;
+  status?: string;
   items: DailyPlanItem[];
 }
 
@@ -99,7 +103,11 @@ export interface PlacementPaperSummary {
   totalMarks: number;
   passingMarks: number;
   difficulty: string;
-  paperSource: 'VERIFIED' | 'REPORTED' | 'PRACTICE' | 'AI_GENERATED';
+  paperSource:
+    | 'VERIFIED'
+    | 'REPORTED'
+    | 'PRACTICE'
+    | 'AI_GENERATED';
   questionCount: number;
   isAttempted?: boolean;
   bestScore?: number;
@@ -120,7 +128,8 @@ export interface PlacementPaperQuestion {
   explanation?: string;
 }
 
-export interface PlacementPaperDetail extends PlacementPaperSummary {
+export interface PlacementPaperDetail
+  extends PlacementPaperSummary {
   instructions: string;
   questions: PlacementPaperQuestion[];
 }
@@ -176,84 +185,152 @@ export interface CompanyPrepHub {
 
 export const careerApi = {
   getDashboard: async (): Promise<CareerDashboard> => {
-    const res = await apiClient.get<CareerDashboard>('/student/career/dashboard');
+    const res = await apiClient.get<CareerDashboard>(
+      '/student/career/dashboard'
+    );
+
     return res.data;
   },
 
   getRoadmap: async (): Promise<CareerRoadmap> => {
-    const res = await apiClient.get<CareerRoadmap>('/student/career/roadmap');
+    const res = await apiClient.get<CareerRoadmap>(
+      '/student/career/roadmap'
+    );
+
     return res.data;
   },
 
-  chatWithCopilot: async (message: string, conversationId?: number): Promise<CopilotChatResponse> => {
-    const res = await apiClient.post<CopilotChatResponse>('/student/career/copilot/chat', {
-      message,
-      conversationId,
-    });
+  chatWithCopilot: async (
+    message: string,
+    conversationId?: number
+  ): Promise<CopilotChatResponse> => {
+    const res = await apiClient.post<CopilotChatResponse>(
+      '/student/career/copilot/chat',
+      {
+        message,
+        conversationId,
+      }
+    );
+
     return res.data;
   },
 
+  /*
+   * Get today's daily preparation plan
+   */
   getDailyPlan: async (): Promise<DailyPlan> => {
-    const res = await apiClient.get<DailyPlan>('/student/career/daily-plan');
+    const res = await apiClient.get<DailyPlan>(
+      '/student/career/daily-plan'
+    );
+
     return res.data;
   },
 
-  toggleDailyTask: async (taskId: number): Promise<DailyPlan> => {
-    const res = await apiClient.post<DailyPlan>(`/student/career/daily-plan/toggle/${taskId}`);
+  /*
+   * Toggle daily task completion
+   */
+  toggleDailyTask: async (
+    taskId: number
+  ): Promise<DailyPlan> => {
+    const res = await apiClient.post<DailyPlan>(
+      `/student/career/daily-plan/toggle/${taskId}`
+    );
+
     return res.data;
   },
 
   getWeakAreas: async (): Promise<WeakArea[]> => {
-    const res = await apiClient.get<WeakArea[]>('/student/career/weak-areas');
+    const res = await apiClient.get<WeakArea[]>(
+      '/student/career/weak-areas'
+    );
+
     return res.data;
   },
 
-  getCompanyPrepHub: async (companyId: number): Promise<CompanyPrepHub> => {
-    const res = await apiClient.get<CompanyPrepHub>(`/student/career/company-prep/${companyId}`);
+  getCompanyPrepHub: async (
+    companyId: number
+  ): Promise<CompanyPrepHub> => {
+    const res = await apiClient.get<CompanyPrepHub>(
+      `/student/career/company-prep/${companyId}`
+    );
+
     return res.data;
   },
 
   listPlacementPapers: async (): Promise<PlacementPaperSummary[]> => {
-    const res = await apiClient.get<PlacementPaperSummary[]>('/placement-papers');
+    const res = await apiClient.get<PlacementPaperSummary[]>(
+      '/placement-papers'
+    );
+
     return res.data;
   },
 
-  getPlacementPaperDetail: async (paperId: number): Promise<PlacementPaperDetail> => {
-    const res = await apiClient.get<PlacementPaperDetail>(`/placement-papers/${paperId}`);
+  getPlacementPaperDetail: async (
+    paperId: number
+  ): Promise<PlacementPaperDetail> => {
+    const res = await apiClient.get<PlacementPaperDetail>(
+      `/placement-papers/${paperId}`
+    );
+
     return res.data;
   },
 
-  startPlacementPaperAttempt: async (paperId: number): Promise<PlacementPaperAttempt> => {
-    const res = await apiClient.post<PlacementPaperAttempt>(`/placement-papers/${paperId}/attempt`);
+  startPlacementPaperAttempt: async (
+    paperId: number
+  ): Promise<PlacementPaperAttempt> => {
+    const res = await apiClient.post<PlacementPaperAttempt>(
+      `/placement-papers/${paperId}/attempt`
+    );
+
     return res.data;
   },
 
   submitPlacementPaperAnswer: async (
     paperId: number,
-    data: { attemptId: number; questionId: number; selectedOption: string; timeTakenSeconds?: number }
+    data: {
+      attemptId: number;
+      questionId: number;
+      selectedOption: string;
+      timeTakenSeconds?: number;
+    }
   ): Promise<void> => {
-    await apiClient.post(`/placement-papers/${paperId}/answer`, data);
+    await apiClient.post(
+      `/placement-papers/${paperId}/answer`,
+      data
+    );
   },
 
-  completePlacementPaperAttempt: async (paperId: number, attemptId: number): Promise<PlacementPaperResult> => {
+  completePlacementPaperAttempt: async (
+    paperId: number,
+    attemptId: number
+  ): Promise<PlacementPaperResult> => {
     const res = await apiClient.post<PlacementPaperResult>(
       `/placement-papers/${paperId}/complete?attemptId=${attemptId}`
     );
+
     return res.data;
   },
 
-  getPlacementPaperResult: async (paperId: number, attemptId: number): Promise<PlacementPaperResult> => {
-    const res = await apiClient.get<PlacementPaperResult>(`/placement-papers/${paperId}/results/${attemptId}`);
+  getPlacementPaperResult: async (
+    paperId: number,
+    attemptId: number
+  ): Promise<PlacementPaperResult> => {
+    const res = await apiClient.get<PlacementPaperResult>(
+      `/placement-papers/${paperId}/results/${attemptId}`
+    );
+
     return res.data;
   },
 
   getTrainerCareerStats: async (): Promise<any> => {
     const res = await apiClient.get('/trainer/career/stats');
+
     return res.data;
   },
 
   getAdminCareerAnalytics: async (): Promise<any> => {
     const res = await apiClient.get('/admin/career/analytics');
+
     return res.data;
   },
 };

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DailyPlanItemDto {
+
     private Long id;
     private DailyPlanCategory category;
     private String title;
