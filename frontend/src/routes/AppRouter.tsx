@@ -1,742 +1,534 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { careerApi, type DailyPlan } from '../api/career';
-
 import {
-  Calendar,
-  CheckCircle,
-  Circle,
-  ArrowRight,
-  TrendingUp,
-  AlertCircle,
-  Sparkles,
-  BookOpen,
-  Code2,
-  Brain,
-  FileText,
-  FileCheck,
-  ShieldCheck,
-} from 'lucide-react';
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom';
 
-export default function DailyPlanPage() {
-  const navigate = useNavigate();
+import { useAuth } from '../hooks/useAuth';
+import { PrivateRoute } from './PrivateRoute';
 
-  const [dailyPlan, setDailyPlan] =
-    useState<DailyPlan | null>(null);
+import { PublicLayout } from '../layouts/PublicLayout';
+import { StudentLayout } from '../layouts/StudentLayout';
+import { TrainerLayout } from '../layouts/TrainerLayout';
+import { AdminLayout } from '../layouts/AdminLayout';
 
-  const [loading, setLoading] =
-    useState<boolean>(true);
+import { LandingPage } from '../pages/LandingPage';
+import { LoginPage } from '../pages/LoginPage';
+import { RegisterPage } from '../pages/RegisterPage';
 
-  const [error, setError] =
-    useState<string | null>(null);
+import { StudentDashboard } from '../pages/student/StudentDashboard';
+import { CoursesPage } from '../pages/student/CoursesPage';
+import { CourseDetailPage } from '../pages/student/CourseDetailPage';
+import { TopicViewerPage } from '../pages/student/TopicViewerPage';
+import { QuizPage } from '../pages/student/QuizPage';
 
-  const [togglingId, setTogglingId] =
-    useState<number | null>(null);
+import { DsaDashboardPage } from '../pages/student/dsa/DsaDashboardPage';
+import { DsaProblemListPage } from '../pages/student/dsa/DsaProblemListPage';
+import { DsaProblemDetailPage } from '../pages/student/dsa/DsaProblemDetailPage';
+import { DsaSubmissionsPage } from '../pages/student/dsa/DsaSubmissionsPage';
 
+import { InterviewDashboardPage } from '../pages/student/interview/InterviewDashboardPage';
+import { InterviewTopicListPage } from '../pages/student/interview/InterviewTopicListPage';
+import { InterviewCompanyListPage } from '../pages/student/interview/InterviewCompanyListPage';
+import { InterviewCompanyDetailPage } from '../pages/student/interview/InterviewCompanyDetailPage';
+import { InterviewQuestionPracticePage } from '../pages/student/interview/InterviewQuestionPracticePage';
+import { MockInterviewSetupPage } from '../pages/student/interview/MockInterviewSetupPage';
+import { LiveMockInterviewPage } from '../pages/student/interview/LiveMockInterviewPage';
+import { MockInterviewReportPage } from '../pages/student/interview/MockInterviewReportPage';
 
-  // =====================================================
-  // LOAD DAILY PLAN
-  // =====================================================
+import { JobSearchPage } from '../pages/student/JobSearchPage';
+import { JobDetailPage } from '../pages/student/JobDetailPage';
+import { SavedJobsPage } from '../pages/student/SavedJobsPage';
+import { ApplicationTrackerPage } from '../pages/student/ApplicationTrackerPage';
+import { ApplicationDetailPage } from '../pages/student/ApplicationDetailPage';
 
-  useEffect(() => {
-    const loadPlan = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+import { PlacementDriveListPage } from '../pages/student/PlacementDriveListPage';
+import { PlacementDriveDetailPage } from '../pages/student/PlacementDriveDetailPage';
 
-        const data =
-          await careerApi.getDailyPlan();
+import { JobPreferencesPage } from '../pages/student/JobPreferencesPage';
+import { JobRecommendationsPage } from '../pages/student/JobRecommendationsPage';
 
-        setDailyPlan(data);
+import { ResumeAnalyzerPage } from '../pages/student/ResumeAnalyzerPage';
+import { ResumeBuilderPage } from '../pages/student/ResumeBuilderPage';
+import { ResumeListPage } from '../pages/student/ResumeListPage';
+import { ResumePreviewPage } from '../pages/student/ResumePreviewPage';
 
-      } catch (err: any) {
-        console.error(
-          'Daily plan error:',
-          err
-        );
+import CareerDashboardPage from '../pages/student/CareerDashboardPage';
+import CareerCopilotPage from '../pages/student/CareerCopilotPage';
+import CareerRoadmapPage from '../pages/student/CareerRoadmapPage';
+import DailyPlanPage from '../pages/student/DailyPlanPage';
 
-        setError(
-          err?.response?.data?.message ||
-            'Failed to load daily preparation plan'
-        );
+import PlacementPaperListPage from '../pages/student/PlacementPaperListPage';
+import PlacementPaperDetailPage from '../pages/student/PlacementPaperDetailPage';
+import PlacementPaperAttemptPage from '../pages/student/PlacementPaperAttemptPage';
 
-      } finally {
-        setLoading(false);
-      }
-    };
+import BookmarksPage from '../pages/student/BookmarksPage';
+import GlobalSearchPage from '../pages/student/GlobalSearchPage';
+import NotificationsPage from '../pages/student/NotificationsPage';
+import StudentProfilePage from '../pages/student/StudentProfilePage';
 
-    loadPlan();
-  }, []);
+import { TrainerDashboard } from '../pages/trainer/TrainerDashboard';
+import { AdminDashboard } from '../pages/admin/AdminDashboard';
 
+import { NotFoundPage } from '../pages/NotFoundPage';
 
-  // =====================================================
-  // TOGGLE TASK
-  // =====================================================
-
-  const handleToggle = async (
-    taskId: number
-  ) => {
-    try {
-      setTogglingId(taskId);
-      setError(null);
-
-      const updatedPlan =
-        await careerApi.toggleDailyTask(
-          taskId
-        );
-
-      setDailyPlan(updatedPlan);
-
-    } catch (err: any) {
-      console.error(
-        'Toggle task error:',
-        err
-      );
-
-      setError(
-        err?.response?.data?.message ||
-          'Failed to update task status'
-      );
-
-    } finally {
-      setTogglingId(null);
-    }
-  };
+import type { RoleName } from '../types';
 
 
-  // =====================================================
-  // OPEN TASK
-  // =====================================================
+// ============================================================
+// ROLE REDIRECT
+// ============================================================
 
-  const handleOpenTask = (
-    actionLink: string
-  ) => {
+function RoleRedirect() {
+  const { user } = useAuth();
 
-    console.log(
-      'Opening daily plan route:',
-      actionLink
-    );
-
-    if (!actionLink) {
-      console.error(
-        'No actionLink found for task'
-      );
-      return;
-    }
-
-    navigate(actionLink);
-  };
-
-
-  // =====================================================
-  // CATEGORY ICON
-  // =====================================================
-
-  const getCategoryIcon = (
-    category: string
-  ) => {
-
-    switch (category) {
-
-      case 'JAVA_TOPIC':
-        return (
-          <BookOpen
-            className="h-4 w-4 text-blue-600"
-          />
-        );
-
-      case 'MCQ_PRACTICE':
-        return (
-          <Brain
-            className="h-4 w-4 text-emerald-600"
-          />
-        );
-
-      case 'DSA_PROBLEM':
-        return (
-          <Code2
-            className="h-4 w-4 text-purple-600"
-          />
-        );
-
-      case 'SQL_PRACTICE':
-        return (
-          <FileText
-            className="h-4 w-4 text-amber-600"
-          />
-        );
-
-      case 'INTERVIEW_QA':
-        return (
-          <FileCheck
-            className="h-4 w-4 text-indigo-600"
-          />
-        );
-
-      case 'MOCK_INTERVIEW':
-        return (
-          <ShieldCheck
-            className="h-4 w-4 text-violet-600"
-          />
-        );
-
-      case 'JOB_APPLY':
-        return (
-          <FileText
-            className="h-4 w-4 text-green-600"
-          />
-        );
-
-      default:
-        return (
-          <Sparkles
-            className="h-4 w-4 text-slate-600"
-          />
-        );
-    }
-  };
-
-
-  // =====================================================
-  // LOADING
-  // =====================================================
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-
-        <div
-          className="
-            h-8
-            w-8
-            animate-spin
-            rounded-full
-            border-4
-            border-indigo-600
-            border-t-transparent
-          "
-        />
-
-      </div>
-    );
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
+  const roleMap: Record<RoleName, string> = {
+    STUDENT: '/student/dashboard',
+    TRAINER: '/trainer/dashboard',
+    ADMIN: '/admin/dashboard',
+  };
 
-  // =====================================================
-  // ERROR
-  // =====================================================
-
-  if (error || !dailyPlan) {
-    return (
-      <div
-        className="
-          rounded-xl
-          border
-          border-red-200
-          bg-red-50
-          p-6
-          text-center
-          text-red-700
-        "
-      >
-
-        <AlertCircle
-          className="mx-auto mb-2 h-8 w-8"
-        />
-
-        <p className="font-semibold">
-          {error ||
-            'Daily preparation plan unavailable.'}
-        </p>
-
-      </div>
-    );
-  }
-
-
-  // =====================================================
-  // MAIN PAGE
-  // =====================================================
+  const primaryRole = user.roles[0] as RoleName;
 
   return (
-    <div
-      className="
-        mx-auto
-        max-w-4xl
-        space-y-8
-        pb-12
-      "
-    >
-
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
-      <div
-        className="
-          rounded-2xl
-          bg-gradient-to-r
-          from-slate-900
-          via-indigo-950
-          to-slate-900
-          p-8
-          text-white
-          shadow-xl
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            gap-6
-            md:flex-row
-            md:items-center
-            md:justify-between
-          "
-        >
-
-          {/* HEADER LEFT */}
-
-          <div className="space-y-1.5">
-
-            <div
-              className="
-                inline-flex
-                items-center
-                gap-2
-                rounded-full
-                border
-                border-indigo-400/30
-                bg-indigo-500/20
-                px-3
-                py-1
-                text-xs
-                font-semibold
-                text-indigo-300
-              "
-            >
-
-              <Calendar
-                className="h-3.5 w-3.5"
-              />
-
-              Target Routine:
-              {' '}
-              {dailyPlan.planDate}
-
-            </div>
+    <Navigate
+      to={roleMap[primaryRole] || '/student/dashboard'}
+      replace
+    />
+  );
+}
 
 
-            <h1
-              className="
-                text-2xl
-                font-bold
-                tracking-tight
-                md:text-3xl
-              "
-            >
-              Daily High-Yield Preparation Plan
-            </h1>
+// ============================================================
+// APP ROUTER
+// ============================================================
 
+export function AppRouter() {
+  return (
+    <BrowserRouter>
+      <Routes>
 
-            <p
-              className="
-                max-w-xl
-                text-xs
-                text-slate-300
-                md:text-sm
-              "
-            >
-              Consistent daily practice across
-              MCQ quizzes, DSA coding patterns,
-              ATS resume audits, and mock rounds
-              ensures placement readiness.
-            </p>
+        {/* ======================================================
+            PUBLIC ROUTES
+        ====================================================== */}
 
-          </div>
-
-
-          {/* PROGRESS */}
-
-          <div
-            className="
-              min-w-[160px]
-              rounded-2xl
-              border
-              border-white/10
-              bg-white/10
-              p-5
-              text-center
-              backdrop-blur-md
-            "
-          >
-
-            <p
-              className="
-                text-xs
-                font-semibold
-                uppercase
-                tracking-wider
-                text-slate-300
-              "
-            >
-              Today's Progress
-            </p>
-
-
-            <p
-              className="
-                mt-1
-                text-3xl
-                font-bold
-                text-white
-              "
-            >
-              {dailyPlan.completedTasks}
-              {' / '}
-              {dailyPlan.totalTasks}
-            </p>
-
-
-            <div
-              className="
-                mt-2
-                h-1.5
-                w-full
-                overflow-hidden
-                rounded-full
-                bg-white/20
-              "
-            >
-
-              <div
-                className="
-                  h-full
-                  rounded-full
-                  bg-emerald-400
-                  transition-all
-                  duration-500
-                "
-                style={{
-                  width:
-                    `${dailyPlan.completionPercentage}%`,
-                }}
-              />
-
-            </div>
-
-
-            <p
-              className="
-                mt-1
-                text-[11px]
-                font-medium
-                text-emerald-300
-              "
-            >
-              {dailyPlan.completionPercentage}%
-              {' '}
-              Completed
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      {/* =================================================
-          TASKS
-      ================================================= */}
-
-      <div className="space-y-4">
-
-        <h2
-          className="
-            flex
-            items-center
-            gap-2
-            text-base
-            font-bold
-            text-slate-900
-          "
-        >
-
-          <TrendingUp
-            className="h-4 w-4 text-indigo-600"
+        <Route element={<PublicLayout />}>
+          <Route
+            path="/"
+            element={<LandingPage />}
           />
 
-          Focus Tasks for Today
+          <Route
+            path="/login"
+            element={<LoginPage />}
+          />
 
-        </h2>
-
-
-        <div className="space-y-3">
-
-          {dailyPlan.items
-            .slice()
-            .sort(
-              (
-                a: DailyPlan['items'][number],
-                b: DailyPlan['items'][number]
-              ) =>
-                a.displayOrder -
-                b.displayOrder
-            )
-            .map(
-              (
-                item: DailyPlan['items'][number],
-                index: number
-              ) => (
-
-                <div
-                  key={item.id}
-                  className={`
-                    flex
-                    flex-col
-                    justify-between
-                    gap-4
-                    rounded-xl
-                    border
-                    p-4
-                    transition-all
-                    sm:flex-row
-                    sm:items-center
-
-                    ${
-                      item.isCompleted
-                        ? `
-                          border-emerald-200
-                          bg-emerald-50/40
-                          text-slate-600
-                        `
-                        : `
-                          border-slate-200
-                          bg-white
-                          text-slate-800
-                          hover:border-indigo-300
-                          hover:shadow-sm
-                        `
-                    }
-                  `}
-                >
-
-                  {/* LEFT SIDE */}
-
-                  <div
-                    className="
-                      flex
-                      items-start
-                      gap-3.5
-                    "
-                  >
-
-                    {/* CHECKBOX */}
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleToggle(
-                          item.id
-                        )
-                      }
-                      disabled={
-                        togglingId ===
-                        item.id
-                      }
-                      className={`
-                        mt-0.5
-                        flex-shrink-0
-                        transition-transform
-                        active:scale-90
-
-                        ${
-                          item.isCompleted
-                            ? `
-                              text-emerald-600
-                            `
-                            : `
-                              text-slate-400
-                              hover:text-indigo-600
-                            `
-                        }
-                      `}
-                    >
-
-                      {item.isCompleted ? (
-
-                        <CheckCircle
-                          className="h-5 w-5"
-                        />
-
-                      ) : (
-
-                        <Circle
-                          className="h-5 w-5"
-                        />
-
-                      )}
-
-                    </button>
+          <Route
+            path="/register"
+            element={<RegisterPage />}
+          />
+        </Route>
 
 
-                    {/* TASK INFORMATION */}
+        {/* ======================================================
+            DYNAMIC DASHBOARD
+        ====================================================== */}
 
-                    <div className="space-y-1">
-
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-2
-                        "
-                      >
-
-                        <span
-                          className="
-                            rounded-md
-                            bg-slate-100
-                            p-1
-                          "
-                        >
-                          {getCategoryIcon(
-                            item.category
-                          )}
-                        </span>
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <RoleRedirect />
+            </PrivateRoute>
+          }
+        />
 
 
-                        <span
-                          className={`
-                            text-sm
-                            font-semibold
+        {/* ======================================================
+            GLOBAL PROFILE
+        ====================================================== */}
 
-                            ${
-                              item.isCompleted
-                                ? `
-                                  text-slate-500
-                                  line-through
-                                `
-                                : `
-                                  text-slate-900
-                                `
-                            }
-                          `}
-                        >
-                          {index + 1}.
-                          {' '}
-                          {item.title}
-                        </span>
-
-                      </div>
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <StudentLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route
+            index
+            element={<StudentProfilePage />}
+          />
+        </Route>
 
 
-                      <p
-                        className="
-                          max-w-xl
-                          text-xs
-                          leading-relaxed
-                          text-slate-500
-                        "
-                      >
-                        Complete the required
-                        target for this task.
-                      </p>
+        {/* ======================================================
+            STUDENT ROUTES
+        ====================================================== */}
 
-                    </div>
+        <Route
+          element={
+            <PrivateRoute allowedRoles={['STUDENT']}>
+              <StudentLayout />
+            </PrivateRoute>
+          }
+        >
 
-                  </div>
+          <Route path="/student">
+
+            {/* Student Dashboard */}
+
+            <Route
+              index
+              element={
+                <Navigate
+                  to="/student/dashboard"
+                  replace
+                />
+              }
+            />
+
+            <Route
+              path="/student/dashboard"
+              element={<StudentDashboard />}
+            />
+
+            {/* Profile */}
+
+            <Route
+              path="/student/profile"
+              element={<StudentProfilePage />}
+            />
+
+            {/* Bookmarks */}
+
+            <Route
+              path="/student/bookmarks"
+              element={<BookmarksPage />}
+            />
+
+            {/* Search */}
+
+            <Route
+              path="/student/search"
+              element={<GlobalSearchPage />}
+            />
+
+            {/* Notifications */}
+
+            <Route
+              path="/student/notifications"
+              element={<NotificationsPage />}
+            />
 
 
-                  {/* RIGHT SIDE */}
+            {/* ==================================================
+                CAREER
+            ================================================== */}
 
-                  <div
-                    className="
-                      flex
-                      items-center
-                      justify-between
-                      gap-3
-                      pl-8
-                      sm:justify-end
-                      sm:pl-0
-                    "
-                  >
+            <Route
+              path="/student/career"
+              element={<CareerDashboardPage />}
+            />
 
-                    {/* TARGET */}
+            <Route
+              path="/student/career/copilot"
+              element={<CareerCopilotPage />}
+            />
 
-                    <span
-                      className="
-                        font-mono
-                        text-[11px]
-                        font-medium
-                        text-slate-400
-                      "
-                    >
-                      Target:
-                      {' '}
-                      {item.completedCount}
-                      /
-                      {item.targetCount}
-                    </span>
+            <Route
+              path="/student/career/roadmap"
+              element={<CareerRoadmapPage />}
+            />
+
+            <Route
+              path="/student/career/daily-plan"
+              element={<DailyPlanPage />}
+            />
 
 
-                    {/* OPEN BUTTON */}
+            {/* ==================================================
+                PLACEMENT PAPERS
+            ================================================== */}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleOpenTask(
-                          item.actionLink
-                        )
-                      }
-                      className={`
-                        inline-flex
-                        items-center
-                        gap-1.5
-                        rounded-xl
-                        px-3.5
-                        py-1.5
-                        text-xs
-                        font-semibold
-                        shadow-sm
-                        transition-colors
+            <Route
+              path="/student/placement-papers"
+              element={<PlacementPaperListPage />}
+            />
 
-                        ${
-                          item.isCompleted
-                            ? `
-                              bg-slate-100
-                              text-slate-600
-                              hover:bg-slate-200
-                            `
-                            : `
-                              bg-indigo-600
-                              text-white
-                              hover:bg-indigo-500
-                            `
-                        }
-                      `}
-                    >
+            <Route
+              path="/student/placement-papers/:id"
+              element={<PlacementPaperDetailPage />}
+            />
 
-                      Open
+            <Route
+              path="/student/placement-papers/:id/attempt"
+              element={<PlacementPaperAttemptPage />}
+            />
 
-                      <ArrowRight
-                        className="h-3 w-3"
-                      />
 
-                    </button>
+            {/* ==================================================
+                COURSES
+            ================================================== */}
 
-                  </div>
+            <Route
+              path="/student/courses"
+              element={<CoursesPage />}
+            />
 
-                </div>
+            <Route
+              path="/student/courses/:id"
+              element={<CourseDetailPage />}
+            />
 
-              )
-            )}
+            <Route
+              path="/student/topics/:id"
+              element={<TopicViewerPage />}
+            />
 
-        </div>
+            <Route
+              path="/student/quiz/topic/:topicId"
+              element={<QuizPage />}
+            />
 
-      </div>
+            <Route
+              path="/student/quiz/course/:courseId"
+              element={<QuizPage />}
+            />
 
-    </div>
+
+            {/* ==================================================
+                DSA
+            ================================================== */}
+
+            <Route
+              path="/student/dsa"
+              element={<DsaDashboardPage />}
+            />
+
+            <Route
+              path="/student/dsa/problems"
+              element={<DsaProblemListPage />}
+            />
+
+            <Route
+              path="/student/dsa/problems/:id"
+              element={<DsaProblemDetailPage />}
+            />
+
+            <Route
+              path="/student/dsa/submissions"
+              element={<DsaSubmissionsPage />}
+            />
+
+
+            {/* ==================================================
+                INTERVIEW
+            ================================================== */}
+
+            <Route
+              path="/student/interview"
+              element={<InterviewDashboardPage />}
+            />
+
+            <Route
+              path="/student/interview/topics"
+              element={<InterviewTopicListPage />}
+            />
+
+            <Route
+              path="/student/interview/companies"
+              element={<InterviewCompanyListPage />}
+            />
+
+            <Route
+              path="/student/interview/companies/:id"
+              element={<InterviewCompanyDetailPage />}
+            />
+
+            <Route
+              path="/student/interview/questions"
+              element={<InterviewQuestionPracticePage />}
+            />
+
+            <Route
+              path="/student/interview/mock"
+              element={<MockInterviewSetupPage />}
+            />
+
+            <Route
+              path="/student/interview/mock/:id"
+              element={<LiveMockInterviewPage />}
+            />
+
+            <Route
+              path="/student/interview/result/:id"
+              element={<MockInterviewReportPage />}
+            />
+
+
+            {/* ==================================================
+                MOCK INTERVIEW ALIASES
+            ================================================== */}
+
+            <Route
+              path="/student/mock-interview"
+              element={<MockInterviewSetupPage />}
+            />
+
+            <Route
+              path="/student/mock-interview/setup"
+              element={<MockInterviewSetupPage />}
+            />
+
+            <Route
+              path="/student/mock-interview/:id"
+              element={<LiveMockInterviewPage />}
+            />
+
+            <Route
+              path="/student/mock-interview/result/:id"
+              element={<MockInterviewReportPage />}
+            />
+
+
+            {/* ==================================================
+                JOBS
+            ================================================== */}
+
+            <Route
+              path="/student/jobs"
+              element={<JobSearchPage />}
+            />
+
+            <Route
+              path="/student/jobs/:id"
+              element={<JobDetailPage />}
+            />
+
+            <Route
+              path="/student/jobs/saved"
+              element={<SavedJobsPage />}
+            />
+
+            <Route
+              path="/student/applications"
+              element={<ApplicationTrackerPage />}
+            />
+
+            <Route
+              path="/student/applications/:id"
+              element={<ApplicationDetailPage />}
+            />
+
+            <Route
+              path="/student/placements"
+              element={<PlacementDriveListPage />}
+            />
+
+            <Route
+              path="/student/placements/:id"
+              element={<PlacementDriveDetailPage />}
+            />
+
+            <Route
+              path="/student/job-preferences"
+              element={<JobPreferencesPage />}
+            />
+
+            <Route
+              path="/student/job-recommendations"
+              element={<JobRecommendationsPage />}
+            />
+
+
+            {/* ==================================================
+                RESUME
+            ================================================== */}
+
+            <Route
+              path="/student/resume/analyzer"
+              element={<ResumeAnalyzerPage />}
+            />
+
+            <Route
+              path="/student/resume/builder"
+              element={<ResumeBuilderPage />}
+            />
+
+            <Route
+              path="/student/resume/resumes"
+              element={<ResumeListPage />}
+            />
+
+            <Route
+              path="/student/resume/resumes/:id"
+              element={<ResumePreviewPage />}
+            />
+
+            <Route
+              path="/student/resume/preview/:id"
+              element={<ResumePreviewPage />}
+            />
+
+          </Route>
+        </Route>
+
+
+        {/* ======================================================
+            TRAINER ROUTES
+        ====================================================== */}
+
+        <Route
+          element={
+            <PrivateRoute
+              allowedRoles={['TRAINER', 'ADMIN']}
+            >
+              <TrainerLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route
+            path="/trainer/dashboard"
+            element={<TrainerDashboard />}
+          />
+        </Route>
+
+
+        {/* ======================================================
+            ADMIN ROUTES
+        ====================================================== */}
+
+        <Route
+          element={
+            <PrivateRoute allowedRoles={['ADMIN']}>
+              <AdminLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route
+            path="/admin/dashboard"
+            element={<AdminDashboard />}
+          />
+        </Route>
+
+
+        {/* ======================================================
+            404
+        ====================================================== */}
+
+        <Route
+          path="*"
+          element={<NotFoundPage />}
+        />
+
+      </Routes>
+    </BrowserRouter>
   );
 }
