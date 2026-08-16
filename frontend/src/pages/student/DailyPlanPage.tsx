@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { careerApi, type DailyPlan } from '../../api/career';
 
 import {
@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 
 export default function DailyPlanPage() {
+  const navigate = useNavigate();
+
   const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +30,7 @@ export default function DailyPlanPage() {
     async function loadPlan() {
       try {
         setLoading(true);
+        setError(null);
 
         const data = await careerApi.getDailyPlan();
 
@@ -48,15 +51,14 @@ export default function DailyPlanPage() {
   }, []);
 
   /*
-   * Mark/unmark task as completed
+   * Mark / unmark task as completed
    */
   const handleToggle = async (taskId: number) => {
     try {
       setTogglingId(taskId);
       setError(null);
 
-      const updatedPlan =
-        await careerApi.toggleDailyTask(taskId);
+      const updatedPlan = await careerApi.toggleDailyTask(taskId);
 
       setDailyPlan(updatedPlan);
     } catch (err: any) {
@@ -69,6 +71,20 @@ export default function DailyPlanPage() {
     } finally {
       setTogglingId(null);
     }
+  };
+
+  /*
+   * Open the route connected to the task
+   */
+  const handleOpenTask = (actionLink: string) => {
+    console.log('Opening route:', actionLink);
+
+    if (!actionLink) {
+      console.error('No actionLink found for this task');
+      return;
+    }
+
+    navigate(actionLink);
   };
 
   /*
@@ -156,6 +172,8 @@ export default function DailyPlanPage() {
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
+          {/* Header text */}
+
           <div className="space-y-1.5">
 
             <div className="inline-flex items-center gap-2 rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-semibold text-indigo-300 border border-indigo-400/30">
@@ -225,115 +243,119 @@ export default function DailyPlanPage() {
         <div className="space-y-3">
 
           {dailyPlan.items
+            .slice()
             .sort(
               (a, b) =>
                 a.displayOrder - b.displayOrder
             )
             .map((item, idx) => (
 
-            <div
-              key={item.id}
-              className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border p-4 transition-all ${
-                item.isCompleted
-                  ? 'border-emerald-200 bg-emerald-50/40 text-slate-600'
-                  : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-sm text-slate-800'
-              }`}
-            >
+              <div
+                key={item.id}
+                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border p-4 transition-all ${
+                  item.isCompleted
+                    ? 'border-emerald-200 bg-emerald-50/40 text-slate-600'
+                    : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-sm text-slate-800'
+                }`}
+              >
 
-              {/* LEFT SIDE */}
+                {/* ================= LEFT SIDE ================= */}
 
-              <div className="flex items-start gap-3.5">
+                <div className="flex items-start gap-3.5">
 
-                {/* Checkbox */}
+                  {/* Checkbox */}
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleToggle(item.id)
-                  }
-                  disabled={
-                    togglingId === item.id
-                  }
-                  className={`mt-0.5 flex-shrink-0 transition-transform active:scale-90 ${
-                    item.isCompleted
-                      ? 'text-emerald-600'
-                      : 'text-slate-400 hover:text-indigo-600'
-                  }`}
-                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleToggle(item.id)
+                    }
+                    disabled={
+                      togglingId === item.id
+                    }
+                    className={`mt-0.5 flex-shrink-0 transition-transform active:scale-90 ${
+                      item.isCompleted
+                        ? 'text-emerald-600'
+                        : 'text-slate-400 hover:text-indigo-600'
+                    }`}
+                  >
 
-                  {item.isCompleted ? (
-                    <CheckCircle className="h-5 w-5" />
-                  ) : (
-                    <Circle className="h-5 w-5" />
-                  )}
+                    {item.isCompleted ? (
+                      <CheckCircle className="h-5 w-5" />
+                    ) : (
+                      <Circle className="h-5 w-5" />
+                    )}
 
-                </button>
+                  </button>
 
-                {/* Task information */}
+                  {/* Task information */}
 
-                <div className="space-y-1">
+                  <div className="space-y-1">
 
-                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
 
-                    <span className="p-1 rounded-md bg-slate-100">
-                      {getCategoryIcon(
-                        item.category
-                      )}
-                    </span>
+                      <span className="p-1 rounded-md bg-slate-100">
+                        {getCategoryIcon(
+                          item.category
+                        )}
+                      </span>
 
-                    <span
-                      className={`text-sm font-semibold ${
-                        item.isCompleted
-                          ? 'line-through text-slate-500'
-                          : 'text-slate-900'
-                      }`}
-                    >
-                      {idx + 1}. {item.title}
-                    </span>
+                      <span
+                        className={`text-sm font-semibold ${
+                          item.isCompleted
+                            ? 'line-through text-slate-500'
+                            : 'text-slate-900'
+                        }`}
+                      >
+                        {idx + 1}. {item.title}
+                      </span>
+
+                    </div>
+
+                    <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
+                      Complete the required target for this task.
+                    </p>
 
                   </div>
 
-                  <p className="text-xs text-slate-500 leading-relaxed max-w-xl">
-                    Complete the required target for this task.
-                  </p>
+                </div>
+
+                {/* ================= RIGHT SIDE ================= */}
+
+                <div className="flex items-center justify-between sm:justify-end gap-3 pl-8 sm:pl-0">
+
+                  {/* Target */}
+
+                  <span className="text-[11px] font-mono font-medium text-slate-400">
+                    Target: {item.completedCount}/
+                    {item.targetCount}
+                  </span>
+
+                  {/* ================= OPEN BUTTON ================= */}
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleOpenTask(item.actionLink)
+                    }
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-semibold shadow-sm transition-colors ${
+                      item.isCompleted
+                        ? 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-500'
+                    }`}
+                  >
+
+                    Open
+
+                    <ArrowRight className="h-3 w-3" />
+
+                  </button>
 
                 </div>
 
               </div>
 
-              {/* RIGHT SIDE */}
-
-              <div className="flex items-center justify-between sm:justify-end gap-3 pl-8 sm:pl-0">
-
-                {/* Target */}
-
-                <span className="text-[11px] font-mono font-medium text-slate-400">
-                  Target: {item.completedCount}/
-                  {item.targetCount}
-                </span>
-
-                {/* OPEN BUTTON */}
-
-                <Link
-                  to={item.actionLink}
-                  className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-semibold shadow-sm transition-colors ${
-                    item.isCompleted
-                      ? 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-500'
-                  }`}
-                >
-
-                  Open
-
-                  <ArrowRight className="h-3 w-3" />
-
-                </Link>
-
-              </div>
-
-            </div>
-
-          ))}
+            ))}
 
         </div>
 
