@@ -58,7 +58,8 @@ export default function DailyPlanPage() {
       setTogglingId(taskId);
       setError(null);
 
-      const updatedPlan = await careerApi.toggleDailyTask(taskId);
+      const updatedPlan =
+        await careerApi.toggleDailyTask(taskId);
 
       setDailyPlan(updatedPlan);
     } catch (err: any) {
@@ -74,17 +75,58 @@ export default function DailyPlanPage() {
   };
 
   /*
-   * Open the route connected to the task
+   * Get correct frontend route for each task
    */
-  const handleOpenTask = (actionLink: string) => {
-    console.log('Opening route:', actionLink);
+  const getActionRoute = (
+    category: string,
+    actionLink?: string
+  ): string => {
+    switch (category) {
+      case 'JAVA_TOPIC':
+        return '/student/courses';
 
-    if (!actionLink) {
-      console.error('No actionLink found for this task');
-      return;
+      case 'MCQ_PRACTICE':
+        return actionLink || '/student/quiz';
+
+      case 'DSA_PROBLEM':
+        return '/student/dsa';
+
+      case 'SQL_PRACTICE':
+        return '/student/courses';
+
+      case 'INTERVIEW_QA':
+        return '/student/interview';
+
+      case 'MOCK_INTERVIEW':
+        return '/student/interview/mock';
+
+      case 'JOB_APPLY':
+        return '/student/jobs';
+
+      default:
+        return actionLink || '/student/dashboard';
     }
+  };
 
-    navigate(actionLink);
+  /*
+   * Open task page
+   */
+  const handleOpenTask = (
+    category: string,
+    actionLink?: string
+  ) => {
+    const route = getActionRoute(
+      category,
+      actionLink
+    );
+
+    console.log('Daily Plan navigation:', {
+      category,
+      actionLink,
+      route,
+    });
+
+    navigate(route);
   };
 
   /*
@@ -154,7 +196,8 @@ export default function DailyPlanPage() {
         <AlertCircle className="mx-auto h-8 w-8 mb-2" />
 
         <p className="font-semibold">
-          {error || 'Daily preparation plan unavailable.'}
+          {error ||
+            'Daily preparation plan unavailable.'}
         </p>
       </div>
     );
@@ -171,8 +214,6 @@ export default function DailyPlanPage() {
       <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 text-white shadow-xl">
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-
-          {/* Header text */}
 
           <div className="space-y-1.5">
 
@@ -205,7 +246,8 @@ export default function DailyPlanPage() {
             </p>
 
             <p className="text-3xl font-bold text-white mt-1">
-              {dailyPlan.completedTasks} / {dailyPlan.totalTasks}
+              {dailyPlan.completedTasks} /{' '}
+              {dailyPlan.totalTasks}
             </p>
 
             <div className="mt-2 w-full bg-white/20 rounded-full h-1.5 overflow-hidden">
@@ -259,7 +301,7 @@ export default function DailyPlanPage() {
                 }`}
               >
 
-                {/* ================= LEFT SIDE ================= */}
+                {/* LEFT SIDE */}
 
                 <div className="flex items-start gap-3.5">
 
@@ -320,7 +362,7 @@ export default function DailyPlanPage() {
 
                 </div>
 
-                {/* ================= RIGHT SIDE ================= */}
+                {/* RIGHT SIDE */}
 
                 <div className="flex items-center justify-between sm:justify-end gap-3 pl-8 sm:pl-0">
 
@@ -331,12 +373,15 @@ export default function DailyPlanPage() {
                     {item.targetCount}
                   </span>
 
-                  {/* ================= OPEN BUTTON ================= */}
+                  {/* OPEN BUTTON */}
 
                   <button
                     type="button"
                     onClick={() =>
-                      handleOpenTask(item.actionLink)
+                      handleOpenTask(
+                        item.category,
+                        item.actionLink
+                      )
                     }
                     className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-semibold shadow-sm transition-colors ${
                       item.isCompleted
